@@ -43,4 +43,18 @@ class ResepModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    function getAssociateItems($id)
+    {
+        return $this->db->table('resep')
+            ->select('
+                resep.*,
+                stok.*,
+                kunjungan.*
+            ')
+            ->join('kunjungan', 'resep.id_kunjungan = kunjungan.id')
+            ->join('stok', 'resep.id_stok = stok.id')
+            ->where('kunjungan.id', $id)
+            ->get()->getResultArray();
+    }
 }

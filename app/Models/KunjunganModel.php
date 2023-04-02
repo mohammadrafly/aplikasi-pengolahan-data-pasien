@@ -70,6 +70,7 @@ class KunjunganModel extends Model
                 users.name as full_name,
                 users.kode_pasien as kode_pasien,
                 diagnosa.gejala as keluhan,
+                kunjungan.kode_kunjungan,
                 kunjungan.diagnosa as diagnosa,
                 kunjungan.created_at as tanggal,
                 kunjungan.updated_at as diperbarui,

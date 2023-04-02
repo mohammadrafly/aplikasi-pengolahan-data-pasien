@@ -15,8 +15,8 @@ class PembayaranModel extends Model
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
     protected $allowedFields    = [
-        'kode_pasien',
-        'total',
+        'kode_kunjungan',
+        'kode_pembayaran',
         'updated_at',
         'created_at',
     ];
@@ -44,4 +44,5 @@ class PembayaranModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
 }

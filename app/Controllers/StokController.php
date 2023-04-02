@@ -13,7 +13,8 @@ class StokController extends BaseController
         if ($this->request->isAJAX() && $this->request->getMethod(true) === 'POST') {
             $data = $this->request->getPost([
                 'name',
-                'quantity'
+                'quantity',
+                'price',
             ]);
             $data['created_at'] = date('Y-m-d');
             $data['updated_at'] = date('Y-m-d');
@@ -44,9 +45,10 @@ class StokController extends BaseController
         if ($this->request->isAJAX() && $this->request->getMethod(true) === 'POST') {
             $data = $this->request->getPost([
                 'name',
-                'quantity'
+                'quantity',
+                'price',
             ]);
-            $data['updated_at'] = date('Y-m-d H:i:s');
+            $data['updated_at'] = date('Y-m-d');
             $model->update($id, $data);
             return $this->response->setJSON([
                 'status' => true,

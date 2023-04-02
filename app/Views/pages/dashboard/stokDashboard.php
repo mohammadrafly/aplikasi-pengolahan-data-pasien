@@ -52,6 +52,10 @@
 																			<label class="required fw-semibold fs-6 mb-2">Quantity</label>
 																			<input type="number" name="quantity" id="quantity" class="form-control form-control-solid mb-3 mb-lg-0" placeholder="0"/>
 																		</div>
+																		<div class="fv-row mb-7">
+																			<label class="required fw-semibold fs-6 mb-2">Harga</label>
+																			<input type="number" name="price" id="price" class="form-control form-control-solid mb-3 mb-lg-0" placeholder="10000"/>
+																		</div>
 																	</div>
 																	<div class="text-center pt-15">
 																		<button type="reset" class="btn btn-light me-3" data-kt-stok-modal-action="cancel">Discard</button>
@@ -77,6 +81,7 @@
 														</th>
 														<th class="min-w-125px">Nama Stok</th>
 														<th class="min-w-125px">Quantity</th>
+														<th class="min-w-125px">Harga</th>
 														<th class="min-w-125px">Last Update</th>
 														<th class="text-end min-w-100px">Actions</th>
 													</tr>
@@ -91,6 +96,7 @@
 														</td>
 														<td><?= $row['name'] ?></td>
 														<td><?= $row['quantity'] ?></td>
+														<td><?= $row['price'] ?></td>
 														<td><?= $row['updated_at'] ?></td>
 														<td class="text-end">
 															<a href="#" class="btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">Actions

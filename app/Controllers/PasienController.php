@@ -9,6 +9,7 @@ use App\Models\PembayaranModel;
 use App\Models\ResepModel;
 use App\Models\StokModel;
 use App\Models\UsersModel;
+use Dompdf\Dompdf;
 
 class PasienController extends BaseController
 {
@@ -91,6 +92,70 @@ class PasienController extends BaseController
         }
     }
 
+    public function pembayaran($id)
+    {
+        helper('number');
+        $modelPembayaran = new PembayaranModel();
+        $modelResep = new ResepModel();
+
+        if ($this->request->getMethod(true) !== 'POST') {
+            return;
+        } else {
+            if ($modelPembayaran->where('kode_kunjungan', $this->request->getPost('kode_kunjungan'))->first()) {
+                $data = [
+                    'items' => $modelResep->getAssociateItems($id),
+                ];
+
+                $filename = date('Y-m-d'). $this->request->getPost('kode_kunjungan');
+
+                // instantiate and use the dompdf class
+                $dompdf = new Dompdf();
+
+                // load HTML content
+                $dompdf->loadHtml(view('invoice/invoice', $data));
+
+                // (optional) setup the paper size and orientation
+                $dompdf->setPaper('A4', 'landscape');
+
+                // render html as PDF
+                $dompdf->render();
+
+                // output the generated pdf
+                $dompdf->stream($filename);
+            } else {
+                $data['kode_kunjungan'] = $this->request->getPost('kode_kunjungan');
+                $prefix = 'PAY_';
+                $kode_unik = $prefix . uniqid(rand(00000, 99999)); 
+                $data['kode_pembayaran'] = $kode_unik;
+        
+                if (!$modelPembayaran->insert($data)) {
+                    return;
+                }
+        
+                $data = [
+                    'items' => $modelResep->getAssociateItems($id),
+                ];
+
+                $filename = date('Y-m-d'). $this->request->getPost('kode_kunjungan');
+
+                // instantiate and use the dompdf class
+                $dompdf = new Dompdf();
+
+                // load HTML content
+                $dompdf->loadHtml(view('invoice/invoice', $data));
+
+                // (optional) setup the paper size and orientation
+                $dompdf->setPaper('A4', 'landscape');
+
+                // render html as PDF
+                $dompdf->render();
+
+                // output the generated pdf
+                $dompdf->stream($filename);
+            }
+        }
+    }
+
     private function generateRandomCode()
     {
         $code = '';
@@ -133,7 +198,6 @@ class PasienController extends BaseController
         }
         return $data;
     }
-
 
     private function insertBatchData($model, $data)
     {

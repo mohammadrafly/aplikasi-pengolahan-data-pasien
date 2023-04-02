@@ -40,6 +40,7 @@ $routes->group('dashboard', ['filter' => 'authenticationMiddleware'], function (
         $routes->get('detail/(:num)', 'PasienController::detail/$1');
         $routes->get('delete/(:num)', 'PasienController::delete/$1');
     });
+    $routes->match(['GET', 'POST'], 'pembayaran/(:num)', 'PasienController::pembayaran/$1');
     $routes->group('users', function ($routes) {
         $routes->get('json', 'UsersController::getUsers');
         $routes->match(['GET', 'POST'], 'list', 'UsersController::index');

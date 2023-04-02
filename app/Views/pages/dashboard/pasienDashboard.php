@@ -41,29 +41,31 @@
 																</div>
 															</div>
 															<div class="modal-body scroll-y mx-5 mx-xl-15 my-7">
-																<form id="form">
+																<form id="form" method="POST">
 																	<div class="d-flex flex-column scroll-y me-n7 pe-7" id="kt_modal_add_kunjungan_scroll" data-kt-scroll="true" data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto" data-kt-scroll-dependencies="#kt_modal_add_kunjungan_header" data-kt-scroll-wrappers="#kt_modal_add_kunjungan_scroll" data-kt-scroll-offset="300px">
-                                                                    	<div class="fv-row mb-7">
+                                                                    	<input type="text" name="id" id="id" hidden/>
+																		<input type="text" name="kode_kunjungan" id="kode_kunjungan" hidden/>
+																		<div class="fv-row mb-3">
 																			<label class="required fw-semibold fs-6 mb-2">Full Name</label>
-																			<input disabled type="text" name="full_name" id="full_name" class="form-control form-control-solid mb-3 mb-lg-0" placeholder="Full name"/>
+																			<input disabled type="text" name="full_name" id="full_name" class="form-control form-control-solid mb-3 mb-lg-0" />
 																		</div>
 																		<div class="fv-row mb-7">
 																			<label class="required fw-semibold fs-6 mb-2">Kode Pasien</label>
-																			<input disabled  type="text" name="kode_pasien" id="kode_pasien" class="form-control form-control-solid mb-3 mb-lg-0" placeholder="alamat"/>
+																			<input disabled  type="text" name="kode_pasien" id="kode_pasien" class="form-control form-control-solid mb-3 mb-lg-0" />
 																		</div>
 																		<div class="fv-row mb-7">
 																			<label class="required fw-semibold fs-6 mb-2">Gejala/Keluhan</label>
-																			<input disabled  type="text" name="keluhan" id="keluhan" class="form-control form-control-solid mb-3 mb-lg-0" placeholder="alamat"/>
+																			<input disabled  type="text" name="keluhan" id="keluhan" class="form-control form-control-solid mb-3 mb-lg-0" />
 																		</div>
 																		<div class="fv-row mb-7">
 																			<label class="required fw-semibold fs-6 mb-2">Diagnosa</label>
-																			<input disabled  type="text" name="diagnosa" id="diagnosa" class="form-control form-control-solid mb-3 mb-lg-0" placeholder="alamat"/>
+																			<input disabled  type="text" name="diagnosa" id="diagnosa" class="form-control form-control-solid mb-3 mb-lg-0" />
 																		</div>
-																	</div>
-																	<div class="text-center pt-15">
-																		<button class="btn btn-primary" >
-																			<span class="indicator-label">Pembayaran</span>
-																		</button>
+																		<div class="text-center pt-15">
+																			<button type="submit" class="btn btn-primary">
+																				<span class="indicator-label">Cetak Nota</span>
+																			</button>
+																		</div>
 																	</div>
 																</form>
 															</div>
@@ -86,7 +88,6 @@
 														<th class="min-w-125px">Gejala/Keluhan</th>
                                                         <th class="min-w-125px">Diagnosa</th>
 														<th class="min-w-125px">Hari/Tanggal</th>
-                                                        <th class="min-w-125px">Diperbarui</th>
 														<th class="text-end min-w-100px">Actions</th>
 													</tr>
 												</thead>
@@ -103,23 +104,10 @@
 														<td><?= $row['keluhan'] ?></td>
                                                         <td><?= $row['diagnosa'] ?></td>
 														<td><?= $row['tanggal'] ?></td>
-														<td><?= $row['diperbarui'] ?></td>
 														<td class="text-end">
-															<a href="#" class="btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">Actions
-															<span class="svg-icon svg-icon-5 m-0">
-																<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-																	<path d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z" fill="currentColor" />
-																</svg>
-															</span>
-															</a>
-															<div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4" data-kt-menu="true">
-																<div class="menu-item px-3">
-																	<a onclick="editKunjungan(<?= $row['id_kunjungan']?>)" class="menu-link px-3">Detail</a>
-																</div>
-																<div class="menu-item px-3">
-																	<a onclick="deleteKunjungan(<?= $row['id_kunjungan']?>)" class="menu-link px-3">Delete</a>
-																</div>
-															</div>
+															<a onclick="editKunjungan(<?= $row['id_kunjungan'] ?>)" class="btn btn-success btn-active-success-primary btn-sm" data-kt-menu-placement="bottom-end">Detail</a>
+															<a onclick="deleteKunjungan(<?= $row['id_kunjungan']?>)" class="btn btn-danger btn-active-danger-primary btn-sm" data-kt-menu-placement="bottom-end">Delete</a>
+															
 														</td>
 													</tr>
 													<?php endforeach ?>
@@ -221,9 +209,40 @@
     })
     .catch(error => console.error(error));
 
+	function doPembayaran() {
+		var url = base_url + 'dashboard/pembayaran/' + id;
+		var id = $("#id").val();
+		$.ajax({
+			url : url,
+			type: 'POST',
+			data: $('#form').serialize(),
+			dataType: "JSON",
+			success: function(respond){
+				Swal.fire({
+					icon: respond.icon,
+					title: respond.title,
+					text: respond.text,
+					timer: 3000,
+					showCancelButton: false,
+					showConfirmButton: false
+				});
+			},
+			error: function (respond, jqXHR, textStatus, errorThrown) {
+				Swal.fire({
+					icon: 'error',
+					title: textStatus,
+					text: errorThrown,
+					timer: 3000,
+					showCancelButton: false,
+					showConfirmButton: false
+				});
+			}
+		});
+	}
+
 	function editKunjungan(id) {
 		save_method = 'update';
-		$('#form'); 
+		$('#form').attr('action', `${base_url}dashboard/pembayaran/${id}`); 
 		$.ajax({
 			url : base_url + 'dashboard/pasien/detail/' + id,
 			type: "GET",
@@ -233,6 +252,7 @@
 				$('[name="id"]').val(respond[0].id_kunjungan);
 				$('[name="full_name"]').val(respond[0].full_name);
 				$('[name="kode_pasien"]').val(respond[0].kode_pasien);
+				$('[name="kode_kunjungan"]').val(respond[0].kode_kunjungan);
 				$('[name="keluhan"]').val(respond[0].keluhan);
 				$('[name="diagnosa"]').val(respond[0].diagnosa);
 				$('#kt_modal_add_kunjungan').modal('show');

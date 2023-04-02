@@ -17,6 +17,7 @@ class StokModel extends Model
     protected $allowedFields    = [
         'name',
         'quantity',
+        'price',
         'updated_at',
         'created_at',
     ];

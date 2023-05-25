@@ -4,6 +4,8 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Models\DiagnosaModel;
+use App\Models\GejalaModel;
+use App\Models\ItemModel;
 use App\Models\KunjunganModel;
 use App\Models\PembayaranModel;
 use App\Models\ResepModel;
@@ -45,35 +47,39 @@ class PasienController extends BaseController
         $model = new KunjunganModel();
         $modelUser = new UsersModel();
         $modelStok = new StokModel();
-        $modelDiagnosa = new DiagnosaModel();
-        $modelResep = new ResepModel();
-
+        $modelItem = new ItemModel();
+        $modelGejala = new GejalaModel();
+        
         if ($this->request->isAJAX() && $this->request->getMethod(true) === 'POST') {
-            $pasien = $this->request->getPost('pasien');
+            $pasien = $this->request->getVar('pasien');
             $chars_to_remove = array('[', ']', '{', '}', ':', '"', 'value');
             $newPasien = str_replace($chars_to_remove, '', $pasien);
             $saperator = ' ';
             $newPasien2 = substr($newPasien, 0, strpos($newPasien, $saperator));
             $data = [
                 'kode_pasien' => $newPasien2,
-                'diagnosa' => $this->request->getPost('diagnosa'),
-                'resep' => $this->request->getPost('resep'), 
+                'diagnosa' => $this->request->getVar('diagnosa'),
+                'resep' => $this->request->getVar('resep'),
+                'kode_pembayaran' => null,
+                'created_at' => date('Y-m-d'),
+                'updated_at' => date('Y-m-d'),
             ];
 
             $random_code = $this->generateRandomCode();
             $data['kode_kunjungan'] = $random_code;
-            $gejala = $this->request->getPost('gejala[]');
-            $stok = $this->request->getPost('id_stok[]');
+            $gejala = $this->request->getVar('gejala');
+            $stok = $this->request->getVar('id_stok[]');
+            $quantity = $this->request->getVar('quantity[]');
 
             $newGejala = str_replace($chars_to_remove, '', $gejala);
-            $arrayGejala = explode(", ", $newGejala);
-
+            $arrayGejala = explode(',', $newGejala);
+            
             $insertedId = $this->insertData($model, $data, $random_code);
-            $diagnosaData = $this->prepareDiagnosaData($arrayGejala, $insertedId);
-            $resepData = $this->prepareStokData($stok, $insertedId);
+            $gejalaData = $this->prepareGejalaData($arrayGejala, $insertedId, $random_code);
+            $itemData = $this->prepareStokData($stok, $quantity, $insertedId);
 
-            $this->insertBatchData($modelResep, $resepData);
-            $this->insertBatchData($modelDiagnosa, $diagnosaData);
+            $this->insertBatchData($modelGejala, $gejalaData);
+            $this->insertBatchData($modelItem, $itemData);
 
             return $this->response->setJSON([
                 'status' => true,
@@ -83,6 +89,7 @@ class PasienController extends BaseController
             ]);
 
         } else {
+            //dd($model->getAssociateData());
             return view('pages/dashboard/pasienDashboard', [
                 'page' => 'Kunjungan Pasien',
                 'data' => $model->getAssociateData(),
@@ -95,15 +102,15 @@ class PasienController extends BaseController
     public function pembayaran($id)
     {
         helper('number');
-        $modelPembayaran = new PembayaranModel();
-        $modelResep = new ResepModel();
+        $modelKunjungan = new KunjunganModel();
+        $modelItem = new ItemModel();
 
         if ($this->request->getMethod(true) !== 'POST') {
             return;
         } else {
-            if ($modelPembayaran->where('kode_kunjungan', $this->request->getPost('kode_kunjungan'))->first()) {
+            if ($modelKunjungan->where('kode_kunjungan', $this->request->getPost('kode_kunjungan'))->first()) {
                 $data = [
-                    'items' => $modelResep->getAssociateItems($id),
+                    'items' => $modelItem->getAssociateItems($id),
                 ];
 
                 $filename = date('Y-m-d'). $this->request->getPost('kode_kunjungan');
@@ -123,17 +130,18 @@ class PasienController extends BaseController
                 // output the generated pdf
                 $dompdf->stream($filename);
             } else {
-                $data['kode_kunjungan'] = $this->request->getPost('kode_kunjungan');
                 $prefix = 'PAY_';
                 $kode_unik = $prefix . uniqid(rand(00000, 99999)); 
-                $data['kode_pembayaran'] = $kode_unik;
+                $data = [
+                    'kode_pembayaran' => $kode_unik,
+                ];
         
-                if (!$modelPembayaran->insert($data)) {
+                if (!$modelKunjungan->update($id,$data)) {
                     return;
                 }
         
                 $data = [
-                    'items' => $modelResep->getAssociateItems($id),
+                    'items' => $modelItem->getAssociateItems($id),
                 ];
 
                 $filename = date('Y-m-d'). $this->request->getPost('kode_kunjungan');
@@ -175,25 +183,30 @@ class PasienController extends BaseController
         }
     }
 
-    private function prepareDiagnosaData($stringGejala, $insertedId)
+    private function prepareGejalaData($arrayGejala, $insertedId, $kodeKunjungan)
     {
         $data = [];
-        for ($i = 0; $i < count($stringGejala); $i++) {
-            $data[$i] = [
-                'id_kunjungan' => $insertedId['id'],
-                'gejala' => $stringGejala[$i]
+        foreach ($arrayGejala as $value) {
+            $data[] = [
+                'gejala' => $value,
+                'kode_kunjungan' => $kodeKunjungan,
+                'created_at' => date('Y-m-d'),
+                'updated_at' => date('Y-m-d'),
             ];
         }
         return $data;
     }
 
-    private function prepareStokData($stringIdStok, $insertedId)
+    private function prepareStokData($stringIdStok, $quantity, $insertedId)
     {
         $data = [];
         for ($i = 0; $i < count($stringIdStok); $i++) {
             $data[$i] = [
-                'id_kunjungan' => $insertedId['id'],
-                'id_stok' => $stringIdStok[$i]
+                'kode_kunjungan' => $insertedId['kode_kunjungan'],
+                'id_stok' => $stringIdStok[$i],
+                'quantity' => $quantity[$i],
+                'created_at' => date('Y-m-d'),
+                'updated_at' => date('Y-m-d'),
             ];
         }
         return $data;

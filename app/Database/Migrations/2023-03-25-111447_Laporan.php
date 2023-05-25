@@ -31,12 +31,10 @@ class Laporan extends Migration
                 'type'       => 'DATE',
             ],
             'created_at' => [
-                'type'    => 'TIMESTAMP',
-                'default' => new RawSql('CURRENT_TIMESTAMP'),
+                'type'    => 'DATE',
             ],
             'updated_at' => [
-                'type'    => 'TIMESTAMP',
-                'default' => new RawSql('CURRENT_TIMESTAMP'),
+                'type'    => 'DATE',
             ]
         ]);
         $this->forge->addKey('id', true);

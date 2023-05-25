@@ -136,24 +136,28 @@
 										<!--end::Heading-->
 										<!--begin::Input group-->
 										<div class="mb-10">
-											<!--End::Label-->
-											<!--begin::Files-->
-											<div class="fv-row mb-10">
-											<!--begin::Label-->
-												<label class="fs-6 fw-semibold mb-2">Obat
-												<i class="fas fa-exclamation-circle ms-2 fs-7" data-bs-toggle="tooltip" title="Masukkan stok obat dengan ketik nama stok obat lalu tekan enter."></i></label>
-												<!--End::Label-->
-												<!--begin::Tagify-->
-												<select class="form-select form-select-solid" data-control="select2" name="id_stok[]" multiple>
-													<?php foreach($stok as $data): ?>
-													<option value="<?= $data['id'] ?>"><?= $data['name'] ?> - <?= $data['price'] ?></option>
-													<?php endforeach ?>
-												</select>
-												<!--end::Tagify-->
+											<div class="fv-row mb-10" id="form-row">
+												<div class="input-group">
+													<select class="form-select form-select-solid" name="id_stok[]">
+														<?php foreach($stok as $data): ?>
+														<option value="<?= $data['id'] ?>"><?= $data['name'] ?> - <?= $data['price'] ?></option>
+														<?php endforeach ?>
+													</select>
+													<input type="number" class="form-control" name="quantity[]" placeholder="Quantity">
+													<button class="btn btn-icon btn-primary" type="button" onclick="addFormRow()">
+														<i class="fas fa-plus"></i>
+													</button>
+												</div>
 											</div>
-											<!--end::Files-->
 										</div>
+										
 										<div class="mb-10">
+											<label class="fs-6 fw-semibold mb-2">List Obat
+												<i class="fas fa-exclamation-circle ms-2 fs-7" data-bs-toggle="tooltip" title="Masukkan stok obat dengan ketik nama stok obat lalu tekan enter."></i>
+											</label>
+											<div class="fv-row mb-10">
+												<div id="new-rows-container"></div>
+											</div>
 											<!--End::Label-->
 											<!--begin::Files-->
 											<div class="fv-row mb-10">

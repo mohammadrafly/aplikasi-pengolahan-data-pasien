@@ -4,20 +4,21 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class ResepModel extends Model
+class ItemModel extends Model
 {
     protected $DBGroup          = 'default';
-    protected $table            = 'resep';
+    protected $table            = 'item';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
-    protected $insertID         = 0;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
     protected $allowedFields    = [
-        'id_kunjungan',
+        'kode_kunjungan',
         'id_stok',
-        'updated_at'
+        'quantity',
+        'created_at',
+        'updated_at',
     ];
 
     // Dates
@@ -46,14 +47,14 @@ class ResepModel extends Model
 
     function getAssociateItems($id)
     {
-        return $this->db->table('resep')
+        return $this->db->table('item')
             ->select('
-                resep.*,
+                item.*,
                 stok.*,
                 kunjungan.*
             ')
-            ->join('kunjungan', 'resep.id_kunjungan = kunjungan.id')
-            ->join('stok', 'resep.id_stok = stok.id')
+            ->join('kunjungan', 'item.kode_kunjungan = kunjungan.kode_kunjungan')
+            ->join('stok', 'item.id_stok = stok.id')
             ->where('kunjungan.id', $id)
             ->get()->getResultArray();
     }

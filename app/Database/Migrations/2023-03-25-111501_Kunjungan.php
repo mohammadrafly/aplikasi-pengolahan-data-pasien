@@ -3,7 +3,6 @@
 namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
-use CodeIgniter\Database\RawSql;
 
 class Kunjungan extends Migration
 {
@@ -16,29 +15,30 @@ class Kunjungan extends Migration
                 'unsigned'       => true,
                 'auto_increment' => true
             ],
-            'id_resep' => [
-                'type'       => 'INT',
-                'constraint' => 11
-            ],
-            'id_pembayaran' => [
-                'type' => 'INT',
-                'constraint' => 11
-            ],
-            'id_diagnosa' => [
-                'type' => 'INT',
-                'constraint' => 11
+            'kode_kunjungan' => [
+                'type' => 'VARCHAR',
+                'constraint' => '255',
             ],
             'kode_pasien' => [
                 'type' => 'VARCHAR',
                 'constraint' => '255'
             ],
+            'kode_pembayaran' => [
+                'type' => 'VARCHAR',
+                'constraint' => '255',
+                'null' => true,
+            ],
+            'diagnosa' => [
+                'type' => 'TEXT',
+            ],
+            'resep' => [
+                'type' => 'TEXT',
+            ],
             'created_at' => [
-                'type'    => 'TIMESTAMP',
-                'default' => new RawSql('CURRENT_TIMESTAMP'),
+                'type'    => 'DATE',
             ],
             'updated_at' => [
-                'type'    => 'TIMESTAMP',
-                'default' => new RawSql('CURRENT_TIMESTAMP'),
+                'type'    => 'DATE',
             ]
         ]);
         $this->forge->addKey('id', true);

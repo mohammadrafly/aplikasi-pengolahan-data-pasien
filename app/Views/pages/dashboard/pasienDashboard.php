@@ -84,6 +84,7 @@
 															</div>
 														</th>
 														<th class="min-w-125px">Kode Pasien</th>
+														<th class="min-w-125px">Kode Kunjungan</th>
 														<th class="min-w-125px">Nama</th>
 														<th class="min-w-125px">Gejala/Keluhan</th>
                                                         <th class="min-w-125px">Diagnosa</th>
@@ -92,25 +93,43 @@
 													</tr>
 												</thead>
 												<tbody class="text-gray-600 fw-semibold">
-													<?php foreach($data as $row): ?>
+												<?php
+												$mergedData = [];
+												foreach ($data as $row) {
+													$code = $row['kode_kunjungan'];
+													if (!isset($mergedData[$code])) {
+														$mergedData[$code] = $row;
+														$mergedData[$code]['gejala'] = array($row['gejala']);
+													} else {
+														$mergedData[$code]['gejala'][] = $row['gejala'];
+													}
+												}
+
+												foreach ($mergedData as &$row) {
+													$row['gejala'] = implode(', ', array_unique($row['gejala']));
+												}
+												unset($row);
+												?>
+												<?php foreach ($mergedData as $row): ?>
 													<tr>
 														<td>
 															<div class="form-check form-check-sm form-check-custom form-check-solid">
-																<input class="form-check-input" type="checkbox" value="<?= $row['id_kunjungan'] ?>" />
+																<input class="form-check-input" type="checkbox" value="<?= $row['id'] ?>" />
 															</div>
 														</td>
 														<td><?= $row['kode_pasien'] ?></td>
+														<td><?= $row['kode_kunjungan'] ?></td>
 														<td><?= $row['full_name'] ?></td>
-														<td><?= $row['keluhan'] ?></td>
-                                                        <td><?= $row['diagnosa'] ?></td>
-														<td><?= $row['tanggal'] ?></td>
+														<td><?= $row['gejala'] ?></td>
+														<td><?= $row['diagnosa'] ?></td>
+														<td><?= $row['created_at'] ?></td>
 														<td class="text-end">
-															<a onclick="editKunjungan(<?= $row['id_kunjungan'] ?>)" class="btn btn-success btn-active-success-primary btn-sm" data-kt-menu-placement="bottom-end">Detail</a>
-															<a onclick="deleteKunjungan(<?= $row['id_kunjungan']?>)" class="btn btn-danger btn-active-danger-primary btn-sm" data-kt-menu-placement="bottom-end">Delete</a>
-															
+															<a onclick="editKunjungan(<?= $row['id'] ?>)" class="btn btn-success btn-active-success-primary btn-sm" data-kt-menu-placement="bottom-end">Detail</a>
+															<a onclick="deleteKunjungan(<?= $row['id']?>)" class="btn btn-danger btn-active-danger-primary btn-sm" data-kt-menu-placement="bottom-end">Delete</a>
 														</td>
 													</tr>
-													<?php endforeach ?>
+												<?php endforeach ?>
+
 												</tbody>
 											</table>
 										</div>
@@ -120,6 +139,49 @@
 
 <?= $this->section('scripts') ?>  
 <script>
+	 var rowCounter = 1;
+
+	function addFormRow() {
+		var formRow = document.getElementById('form-row');
+		var clone = formRow.cloneNode(true);
+		clone.id = 'form-row-' + rowCounter;
+
+		var deleteButton = document.createElement('button');
+		deleteButton.className = 'btn btn-icon btn-danger';
+		deleteButton.type = 'button';
+		deleteButton.innerHTML = '<i class="fas fa-trash-alt"></i>';
+		deleteButton.onclick = function() {
+			deleteFormRow(clone.id);
+		};
+
+		var inputGroup = clone.querySelector('.input-group');
+		inputGroup.appendChild(deleteButton);
+
+		clone.querySelector('select').setAttribute('disabled', '');
+		clone.querySelector('input').setAttribute('readonly', '');
+		clone.querySelector('button').setAttribute('hidden', '');
+
+		document.getElementById('new-rows-container').appendChild(clone);
+		rowCounter++;
+
+		if (rowCounter > 1) {
+			var addRowButton = document.getElementById('add-row-button');
+			addRowButton.style.display = 'none';
+		}
+	}
+
+	function deleteFormRow(rowId) {
+		var row = document.getElementById(rowId);
+		row.parentNode.removeChild(row);
+
+		rowCounter--;
+
+		if (rowCounter <= 1) {
+			var addRowButton = document.getElementById('add-row-button');
+			addRowButton.style.display = 'block';
+		}
+	}
+
 	const form = document.getElementById('kt_modal_create_campaign_stepper_form');
 
 	form.addEventListener('keydown', (event) => {

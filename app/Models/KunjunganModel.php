@@ -16,9 +16,12 @@ class KunjunganModel extends Model
     protected $protectFields    = true;
     protected $allowedFields    = [
         'kode_kunjungan',
+        'kode_pasien',
+        'kode_pembayaran',
         'diagnosa',
         'resep',
-        'kode_pasien'
+        'created_at',
+        'updated_at',
     ];
 
     // Dates
@@ -51,14 +54,12 @@ class KunjunganModel extends Model
             ->select('
                 users.name as full_name,
                 users.kode_pasien as kode_pasien,
-                diagnosa.gejala as keluhan,
-                kunjungan.diagnosa as diagnosa,
-                kunjungan.created_at as tanggal,
-                kunjungan.updated_at as diperbarui,
-                kunjungan.id as id_kunjungan,
+                gejala.gejala as gejala,
+                kunjungan.*
             ')
             ->join('users', 'kunjungan.kode_pasien = users.kode_pasien')
-            ->join('diagnosa', 'kunjungan.id = diagnosa.id_kunjungan')
+            ->join('gejala', 'kunjungan.kode_kunjungan = gejala.kode_kunjungan')
+            ->join('item', 'kunjungan.kode_kunjungan = item.kode_kunjungan')
             ->where('role', 'pasien')
             ->get()->getResultArray();
     }
@@ -69,15 +70,15 @@ class KunjunganModel extends Model
             ->select('
                 users.name as full_name,
                 users.kode_pasien as kode_pasien,
-                diagnosa.gejala as keluhan,
+                gejala.gejala as keluhan,
                 kunjungan.kode_kunjungan,
-                kunjungan.diagnosa as diagnosa,
+                kunjungan.diagnosa,
                 kunjungan.created_at as tanggal,
                 kunjungan.updated_at as diperbarui,
                 kunjungan.id as id_kunjungan,
             ')
             ->join('users', 'kunjungan.kode_pasien = users.kode_pasien')
-            ->join('diagnosa', 'kunjungan.id = diagnosa.id_kunjungan')
+            ->join('gejala', 'kunjungan.kode_kunjungan = gejala.kode_kunjungan')
             ->where('kunjungan.id',$id)
             ->get()->getResult();
     }

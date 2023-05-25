@@ -5,7 +5,7 @@ namespace App\Database\Migrations;
 use CodeIgniter\Database\Migration;
 use CodeIgniter\Database\RawSql;
 
-class ListGejala extends Migration
+class Gejala extends Migration
 {
     public function up()
     {
@@ -16,29 +16,27 @@ class ListGejala extends Migration
                 'unsigned'       => true,
                 'auto_increment' => true
             ],
-            'gejala' => [
-                'type' => 'VARCHAR',
+            'kode_kunjungan' => [
+                'type'       => 'VARCHAR',
                 'constraint' => '255'
             ],
-            'id_diagnosa' => [
-                'type' => 'INT',
-                'constraint' => 11
+            'gejala' => [
+                'type'       => 'VARCHAR',
+                'constraint' => '255'
             ],
             'created_at' => [
-                'type'    => 'TIMESTAMP',
-                'default' => new RawSql('CURRENT_TIMESTAMP'),
+                'type'    => 'DATE',
             ],
             'updated_at' => [
-                'type'    => 'TIMESTAMP',
-                'default' => new RawSql('CURRENT_TIMESTAMP'),
+                'type'    => 'DATE',
             ]
         ]);
         $this->forge->addKey('id', true);
-        $this->forge->createTable('list_gejala');
+        $this->forge->createTable('gejala');
     }
 
     public function down()
     {
-        $this->forge->dropTable('list_gejala');
+        $this->forge->dropTable('gejala');
     }
 }

@@ -4,21 +4,20 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class PembayaranModel extends Model
+class GejalaModel extends Model
 {
     protected $DBGroup          = 'default';
-    protected $table            = 'pembayaran';
+    protected $table            = 'gejala';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
-    protected $insertID         = 0;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
     protected $allowedFields    = [
         'kode_kunjungan',
-        'kode_pembayaran',
-        'updated_at',
+        'gejala',
         'created_at',
+        'updated_at',
     ];
 
     // Dates
@@ -44,5 +43,4 @@ class PembayaranModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
-
 }

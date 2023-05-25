@@ -5,7 +5,7 @@ namespace App\Database\Migrations;
 use CodeIgniter\Database\Migration;
 use CodeIgniter\Database\RawSql;
 
-class Pembayaran extends Migration
+class Item extends Migration
 {
     public function up()
     {
@@ -16,29 +16,31 @@ class Pembayaran extends Migration
                 'unsigned'       => true,
                 'auto_increment' => true
             ],
-            'list_item' => [
+            'kode_kunjungan' => [
                 'type'       => 'VARCHAR',
                 'constraint' => '255'
             ],
-            'total' => [
-                'type' => 'VARCHAR',
-                'constraint' => '255'
+            'id_stok' => [
+                'type'       => 'INT',
+                'constraint' => 11
+            ],
+            'quantity' => [
+                'type' => 'INT',
+                'constraint' => 11
             ],
             'created_at' => [
-                'type'    => 'TIMESTAMP',
-                'default' => new RawSql('CURRENT_TIMESTAMP'),
+                'type'    => 'DATE',
             ],
             'updated_at' => [
-                'type'    => 'TIMESTAMP',
-                'default' => new RawSql('CURRENT_TIMESTAMP'),
+                'type'    => 'DATE',
             ]
         ]);
         $this->forge->addKey('id', true);
-        $this->forge->createTable('pembayaran');
+        $this->forge->createTable('item');
     }
 
     public function down()
     {
-        $this->forge->dropTable('pembayaran');
+        $this->forge->dropTable('item');
     }
 }

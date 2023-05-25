@@ -14,6 +14,8 @@ class Administrator extends Seeder
             'email'     => 'admin@gmail.com',
             'password'  => password_hash('admin', PASSWORD_DEFAULT),
             'role'      => 'admin',
+            'created_at'=> date('Y-m-d'),
+            'updated_at'=> date('Y-m-d'),
         ];
         $this->db->table('users')->insert($data);
     }

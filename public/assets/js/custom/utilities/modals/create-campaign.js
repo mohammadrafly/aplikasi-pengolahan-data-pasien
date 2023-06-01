@@ -99,48 +99,11 @@ var KTCreateCampaign = function () {
 				// Enable button
 				formSubmitButton.disabled = false;
 
-				saveKunjungan();
 				//KTUtil.scrollTop();
 			}, 2000);
 		});
 	}
 	
-	function saveKunjungan() {
-		var url;
-		var id = $("#id").val();
-		if(!id) {
-			url = base_url + 'dashboard/pasien';
-		} else {
-			url = base_url + 'dashboard/pasien/update/' + id;
-		}
-	
-		$.ajax({
-			url : url,
-			type: 'POST',
-			data: $('#kt_modal_create_campaign_stepper_form').serialize(),
-			dataType: "JSON",
-			success: function(respond){
-				Swal.fire({
-					icon: respond.icon,
-					title: respond.title,
-					text: respond.text,
-					timer: 3000,
-					showCancelButton: false,
-					showConfirmButton: false
-				}).then (function() {
-					location.reload();
-				});
-			},
-			error: function (jqXHR, textStatus, errorThrown) {
-				Swal.fire({
-					icon: 'error',
-					title: textStatus,
-					text: errorThrown,
-				});
-			}
-		});
-	}
-
 	// Init form inputs
 	var initForm = function () {
 		// Init age slider

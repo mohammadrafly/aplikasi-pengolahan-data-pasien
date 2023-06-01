@@ -36,7 +36,8 @@ $routes->group('dashboard', ['filter' => 'authenticationMiddleware'], function (
     $routes->get('sign-out', 'DashboardController::signOut');
     $routes->get('/', 'DashboardController::index');
     $routes->group('pasien', function ($routes) {
-        $routes->match(['GET', 'POST'], '/', 'PasienController::index');
+        $routes->get('/', 'PasienController::index');
+        $routes->post('kunjungan', 'PasienController::kunjungan');
         $routes->get('detail/(:num)', 'PasienController::detail/$1');
         $routes->get('delete/(:num)', 'PasienController::delete/$1');
     });

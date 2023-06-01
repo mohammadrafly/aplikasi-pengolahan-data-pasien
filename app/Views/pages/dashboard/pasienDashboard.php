@@ -1,7 +1,97 @@
 <?= $this->extend('layout/dashboardLayout') ?>
 
 <?= $this->section('content') ?>  
-<?= $this->include('pages/partials/createKunjungan') ?>
+									<div class="card">
+									<div class="card-header border-0 pt-6">
+										<div class="row justify-content-end card-body py-4">
+											<div class="col-4">
+												<div class="form-group">
+												<label class="required fw-semibold fs-6 mb-2">Nama Stok</label>
+												<select class="form-select form-select-solid" data-control="select2" data-placeholder="Select an option" name="id_stok[]" id="stokSelect" onchange="updatePrice()">
+													<option value="" selected>Pilih Obat</option>
+													<?php foreach ($stok as $datas): ?>
+													<option value="<?= $datas['id'] ?>" data-price="<?= $datas['price'] ?>"><?= $datas['name'] ?></option>
+													<?php endforeach ?>
+												</select>
+												</div>
+											</div>
+											<div class="col-2">
+												<div class="form-group">
+												<label class="required fw-semibold fs-6 mb-2">Quantity</label>
+												<input type="number" name="quantity" id="quantity" class="form-control form-control-solid" placeholder="0" oninput="calculateSubtotal()" />
+												</div>
+											</div>
+											<div class="col-2">
+												<div class="form-group">
+												<label class="required fw-semibold fs-6 mb-2">Harga</label>
+												<input type="number" name="price" id="price" class="form-control form-control-solid" readonly />
+												</div>
+											</div>
+											<div class="col-2">
+												<div class="form-group">
+												<label class="required fw-semibold fs-6 mb-2">Subtotal</label>
+												<input type="number" name="subtotal" id="subtotal" class="form-control form-control-solid" placeholder="0" readonly />
+												</div>
+											</div>
+											<div class="col-2">
+												<div class="form-group">
+												<button type="button" class="btn btn-primary" onclick="addTableRow()">Tambah Obat</button>
+												</div>
+											</div>
+										</div>
+										<form class="card-body py-4" id="form">
+											<div class="col-12">
+												<div class="form-group">
+												<label class="required fw-semibold fs-6 mb-2">Pasien</label>
+												<select class="form-select form-select-solid" data-control="select2" name="pasien" id="pasien" data-placeholder="Select an option">
+													<option></option>
+													<?php foreach ($pasien as $datas): ?>
+													<option value="<?= $datas['kode_pasien'] ?>"><?= $datas['name'] ?> - <?= $datas['kode_pasien'] ?></option>
+													<?php endforeach ?>
+												</select>
+												</div>
+											</div>
+											<div class="col-12">
+												<div class="form-group">
+												<label class="required fw-semibold fs-6 mb-2">Gejala</label>
+													<textarea type="text" name="gejala" id="gejala" class="form-control form-control-solid" placeholder="contoh: mual mual, pusing, batuk"></textarea>
+												</div>
+											</div>
+											<div class="col-12">
+												<div class="form-group">
+												<label class="required fw-semibold fs-6 mb-2">Diagnosa</label>
+													<textarea type="text" name="diagnosa" id="diagnosa" class="form-control form-control-solid" placeholder="Sakit Panas"></textarea>
+												</div>
+											</div>
+											<table class="table align-middle table-row-dashed fs-6 gy-5">
+												<label class="required fw-semibold fs-6 mb-2">List Obat</label>
+												<thead>
+													<tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
+														<th class="min-w-125px">Nama Obat</th>
+														<th class="min-w-125px">Quantity</th>
+														<th class="min-w-125px">Harga</th>
+														<th class="min-w-125px">Subtotal</th>
+														<th class="min-w-125px">Actions</th>
+													</tr>
+												</thead>
+												<tbody class="text-gray-600 fw-semibold" id="table-body">
+												</tbody>
+											</table>
+											<div class="col-12">
+												<div class="form-group">
+												<label class="required fw-semibold fs-6 mb-2">Resep</label>
+													<textarea type="text" name="resep" id="resep" class="form-control form-control-solid" placeholder="Minum obat 2x sehari"></textarea>
+												</div>
+											</div>
+											<div class="col-12 mt-5">
+												<div class="form-group">
+													<button type="button" class="btn btn-primary" onclick="postData()">Submit Kunjungan</button>
+												</div>
+											</div>
+										</form>
+									</div>
+									</div>
+									<br>
 									<div class="card">
 										<div class="card-header border-0 pt-6">
 											<div class="card-title">
@@ -16,16 +106,6 @@
 												</div>
 											</div>
 											<div class="card-toolbar">
-											    <div class="d-flex justify-content-end" data-kt-kunjungan-table-toolbar="base">
-													<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_create_campaign">
-													<span class="svg-icon svg-icon-2">
-														<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-															<rect opacity="0.5" x="11.364" y="20.364" width="16" height="2" rx="1" transform="rotate(-90 11.364 20.364)" fill="currentColor" />
-															<rect x="4.36396" y="11.364" width="16" height="2" rx="1" fill="currentColor" />
-														</svg>
-													</span>
-													Add Kunjungan</button>
-												</div>
 												<div class="modal fade" id="kt_modal_add_kunjungan" tabindex="-1" aria-hidden="true">
 													<div class="modal-dialog modal-dialog-centered mw-650px">
 														<div class="modal-content">
@@ -41,7 +121,6 @@
 																</div>
 															</div>
 															<div class="modal-body scroll-y mx-5 mx-xl-15 my-7">
-																<form id="form" method="POST">
 																	<div class="d-flex flex-column scroll-y me-n7 pe-7" id="kt_modal_add_kunjungan_scroll" data-kt-scroll="true" data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto" data-kt-scroll-dependencies="#kt_modal_add_kunjungan_header" data-kt-scroll-wrappers="#kt_modal_add_kunjungan_scroll" data-kt-scroll-offset="300px">
                                                                     	<input type="text" name="id" id="id" hidden/>
 																		<input type="text" name="kode_kunjungan" id="kode_kunjungan" hidden/>
@@ -62,12 +141,11 @@
 																			<input disabled  type="text" name="diagnosa" id="diagnosa" class="form-control form-control-solid mb-3 mb-lg-0" />
 																		</div>
 																		<div class="text-center pt-15">
-																			<button type="submit" class="btn btn-primary">
+																			<button type="button" class="btn btn-primary" onclick="printPDF()">
 																				<span class="indicator-label">Cetak Nota</span>
 																			</button>
 																		</div>
 																	</div>
-																</form>
 															</div>
 														</div>
 													</div>
@@ -138,48 +216,169 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.3/jspdf.umd.min.js"></script>
 <script>
-	 var rowCounter = 1;
+	function printPDF() {
+        // Get the content of the modal
+		var modalContent = document.getElementById('kt_modal_add_kunjungan_scroll').innerHTML;
+        
+        // Create a new jsPDF instance
+        var doc = new jsPDF();
+        
+        // Set the font size and add the modal content to the PDF
+        doc.setFontSize(12);
+        doc.html(modalContent, {
+            callback: function (pdf) {
+                // Save the PDF as a file with the name "nota.pdf"
+                pdf.save('nota.pdf');
+            }
+        });
+    }
 
-	function addFormRow() {
-		var formRow = document.getElementById('form-row');
-		var clone = formRow.cloneNode(true);
-		clone.id = 'form-row-' + rowCounter;
-
-		var deleteButton = document.createElement('button');
-		deleteButton.className = 'btn btn-icon btn-danger';
-		deleteButton.type = 'button';
-		deleteButton.innerHTML = '<i class="fas fa-trash-alt"></i>';
-		deleteButton.onclick = function() {
-			deleteFormRow(clone.id);
-		};
-
-		var inputGroup = clone.querySelector('.input-group');
-		inputGroup.appendChild(deleteButton);
-
-		clone.querySelector('select').setAttribute('disabled', '');
-		clone.querySelector('input').setAttribute('readonly', '');
-		clone.querySelector('button').setAttribute('hidden', '');
-
-		document.getElementById('new-rows-container').appendChild(clone);
-		rowCounter++;
-
-		if (rowCounter > 1) {
-			var addRowButton = document.getElementById('add-row-button');
-			addRowButton.style.display = 'none';
-		}
+	function showSwalNotification(icon, title, text) {
+		Swal.fire({
+			icon: icon,
+			title: title,
+			text: text,
+			timer: 3000,
+			showCancelButton: false,
+			showConfirmButton: false
+		});
 	}
 
-	function deleteFormRow(rowId) {
-		var row = document.getElementById(rowId);
-		row.parentNode.removeChild(row);
+	function postData() {
+		var pasien = document.getElementById("pasien").value;
+		var gejalaInput = document.getElementById("gejala").value;
+		var diagnosa = document.getElementById("diagnosa").value;
+		var resep = document.getElementById("resep").value;
 
-		rowCounter--;
+		var gejalaArray = gejalaInput.split(",").map(function (item) {
+			return item.trim();
+		});
 
-		if (rowCounter <= 1) {
-			var addRowButton = document.getElementById('add-row-button');
-			addRowButton.style.display = 'block';
+		var table = document.getElementById("table-body");
+		var rows = table.getElementsByTagName("tr");
+		var idStokList = [];
+		var quantityList = [];
+
+		for (var i = 0; i < rows.length; i++) {
+			var cells = rows[i].getElementsByTagName("td");
+			var idStok = cells[0].innerText; 
+			var quantity = cells[2].innerText; 
+			idStokList.push(idStok);
+			quantityList.push(quantity);
 		}
+
+		var data = {
+			pasien: pasien,
+			gejala: gejalaArray,
+			diagnosa: diagnosa,
+			id_stok: idStokList,
+			quantity: quantityList,
+			resep: resep,
+		};
+
+		$.ajax({
+			url: `${base_url}dashboard/pasien/kunjungan`,
+			type: "POST",
+			data: JSON.stringify(data),
+			contentType: "application/json",
+			processData: false,
+			contentType: false,
+			success: function(respond) {
+			console.log(respond);
+			if (respond.status) {
+				showSwalNotification(respond.icon, respond.title, respond.text);
+				location.reload();
+			} else {
+				showSwalNotification(respond.icon, respond.title, respond.text);
+				console.error(respond.message);
+			}
+			},
+			error: function(error) {
+			console.error('Error:', error);
+			}
+		});
+	}
+
+	function formatRupiah(number) {
+		var formatter = new Intl.NumberFormat('id-ID', {
+			style: 'currency',
+			currency: 'IDR'
+		});
+		return formatter.format(number);
+	}
+
+	function updateTotal() {
+		var tableRows = document.querySelectorAll('#table-body tr');
+		var total = 0;
+
+		tableRows.forEach(function(row) {
+			var subtotalCell = row.querySelector('td:nth-child(5)');
+			var subtotalText = subtotalCell.textContent.trim().replace(/[^\d,-]/g, '').replace(',', '.');
+			var subtotal = parseFloat(subtotalText);
+			console.log(subtotal);
+
+			if (!isNaN(subtotal)) {
+			total += subtotal;
+			}
+		});
+
+		var totalCell = document.getElementById('total-cell');
+		totalCell.textContent = formatRupiah(total);
+		totalCell.dataset.value = total;
+	}
+
+	function updatePrice() {
+		var selectedOption = document.getElementById('stokSelect').options[document.getElementById('stokSelect').selectedIndex];
+		var price = selectedOption.getAttribute('data-price');
+		document.getElementById('price').value = price;
+
+		calculateSubtotal();
+	}
+
+	function calculateSubtotal() {
+		var price = document.getElementById('price').value;
+		var quantity = document.getElementById('quantity').value;
+		var subtotal = price * quantity;
+		document.getElementById('subtotal').value = subtotal;
+	}
+
+	function addTableRow() {
+		var id = document.getElementById('stokSelect').value;
+		var name = document.getElementById('stokSelect').options[document.getElementById('stokSelect').selectedIndex].text;
+		var quantity = document.getElementById('quantity').value;
+		if (id == '') {
+			showSwalNotification('error', 'Peringatan!', 'Pilih item terlebih dahulu!');
+			return
+		}
+		if (quantity == '') {
+			showSwalNotification('error', 'Peringatan!', 'Pilih berapa banyak obat yang diinginkan!');
+			return
+		}
+		var price = document.getElementById('price').value;
+		var subtotal = document.getElementById('subtotal').value;
+
+		var newRow = '<tr>' +
+			'<td hidden>' + id + '</td>' +
+			'<td>' + name + '</td>' +
+			'<td>' + quantity + '</td>' +
+			'<td>' + price + '</td>' +
+			'<td>' + subtotal + '</td>' +
+			'<td><button type="button" class="btn btn-danger btn-sm delete-button" onclick="deleteTableRow(this)">Delete</button></td>' +
+			'</tr>';
+
+		document.getElementById('table-body').insertAdjacentHTML('beforeend', newRow);
+
+		document.getElementById('quantity').value = '';
+		document.getElementById('price').value = '';
+		document.getElementById('subtotal').value = '';
+	}
+
+	function deleteTableRow(button) {
+		button.closest('tr').remove();
 	}
 
 	const form = document.getElementById('kt_modal_create_campaign_stepper_form');
@@ -219,7 +418,7 @@
 	// Initialize Tagify components on the above inputs
 	new Tagify(gejala);
 
-	var input = document.querySelector("#id_stok");
+	var input = document.querySelector("#idSelect");
 
 	fetch(base_url + 'dashboard/stok/json')
     .then(response => response.json())

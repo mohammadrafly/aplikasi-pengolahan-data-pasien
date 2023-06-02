@@ -53,6 +53,8 @@
 			<!--end::Page-->
 		</div>
         <?= $this->include('layout/partials/scrollToTop') ?>
+		<script src="<?= base_url('assets/js/jspdf.debug.js') ?>"></script>
+		<script src="<?= base_url('assets/libs/html2pdf.js') ?>"></script>
 		<script src="<?= base_url('assets/plugins/global/plugins.bundle.js') ?>"></script>
 		<script src="<?= base_url('assets/js/scripts.bundle.js') ?>"></script>
         <script src="<?= base_url('assets/js/global.js') ?>"></script>

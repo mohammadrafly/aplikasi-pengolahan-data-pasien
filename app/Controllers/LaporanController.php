@@ -5,6 +5,7 @@ namespace App\Controllers;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use App\Controllers\BaseController;
+use App\Models\KunjunganModel;
 use App\Models\LaporanModel;
 use App\Models\UsersModel;
 use App\Models\StokModel;
@@ -89,6 +90,7 @@ class LaporanController extends BaseController
     {
         $modelUser = new UsersModel();
         $modelStok = new StokModel();
+        $modelStock = new KunjunganModel();
         if ($table === 'pasien') {
             $dataUser = $modelUser->findDataInBetween($table, $start_date, $end_date);
             $spreadsheet = new Spreadsheet();
@@ -179,6 +181,57 @@ class LaporanController extends BaseController
             header('Content-Disposition: attachment;filename='.$fileName.'.xlsx');
             header('Cache-Control: max-age=0');
         
+            $writer->save('php://output');
+        } elseif ($table === 'pembayaran') {
+            $dataKunjungan = $modelStock->getAllAssociateData($start_date, $end_date);
+
+            $spreadsheet = new Spreadsheet();
+            // tulis header/nama kolom 
+            $spreadsheet->setActiveSheetIndex(0)
+                ->setCellValue('A1', 'Full Name')
+                ->setCellValue('B1', 'Kode Pasien')
+                ->setCellValue('C1', 'Kode Kunjungan')
+                ->setCellValue('D1', 'Diagnosa')
+                ->setCellValue('E1', 'Tanggal')
+                ->setCellValue('F1', 'Harga');
+
+            $mergedData = [];
+            foreach ($dataKunjungan as $data) {
+                $kodeKunjungan = $data->kode_kunjungan;
+                if (!isset($mergedData[$kodeKunjungan])) {
+                    $mergedData[$kodeKunjungan] = [
+                        'full_name' => $data->full_name,
+                        'kode_pasien' => $data->kode_pasien,
+                        'diagnosa' => $data->diagnosa,
+                        'tanggal' => $data->tanggal,
+                        'total_harga' => 0,
+                    ];
+                }
+                $mergedData[$kodeKunjungan]['total_harga'] += $data->harga * $data->quantity;
+            }
+
+            $column = 2;
+            // Write merged data to the spreadsheet
+            foreach ($mergedData as $kodeKunjungan => $data) {
+                $spreadsheet->setActiveSheetIndex(0)
+                    ->setCellValue('A' . $column, $data['full_name'])
+                    ->setCellValue('B' . $column, $data['kode_pasien'])
+                    ->setCellValue('C' . $column, $kodeKunjungan)
+                    ->setCellValue('D' . $column, $data['diagnosa'])
+                    ->setCellValue('E' . $column, $data['tanggal'])
+                    ->setCellValue('F' . $column, $data['total_harga']);
+                $column++;
+            }
+
+            // tulis dalam format .xlsx
+            $writer = new Xlsx($spreadsheet);
+            $fileName = 'Data Pembayaran';
+
+            // Redirect hasil generate xlsx ke web client
+            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            header('Content-Disposition: attachment;filename='.$fileName.'.xlsx');
+            header('Cache-Control: max-age=0');
+
             $writer->save('php://output');
         }
     }

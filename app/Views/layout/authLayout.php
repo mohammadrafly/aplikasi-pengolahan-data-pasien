@@ -16,7 +16,7 @@
 					<div class="d-flex flex-column flex-center p-6 p-lg-10 w-100">
 						<img class="d-none d-lg-block mx-auto w-300px w-lg-75 w-xl-500px mb-10 mb-lg-20" src="<?= base_url('assets/media/logos/auth-logo.png') ?>" alt="" />
 						<h1 class="d-none d-lg-block text-white fs-2qx fw-bold text-center mb-7">Aplikasi Pengolahan Data Pasien</h1>
-						<div class="d-none d-lg-block text-white fs-base text-center">Jl Raya Bogor Km 335/19Curug Jakarta. Indonesia</div>
+						<div class="d-none d-lg-block text-white fs-base text-center">Jl. Mbah Ronggo, Dusun Bujel, Desa Sendangrejo, Kecamatan Ngimbang, Kabupaten Lamongan, Provinsi Jawa Timur</div>
 					</div>
 				</div>
 				<div class="d-flex flex-column flex-lg-row-fluid w-lg-50 p-10">

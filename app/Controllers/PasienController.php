@@ -44,6 +44,7 @@ class PasienController extends BaseController
         $modelKunjungan = new KunjunganModel();
         $modelItem = new ItemModel();
         $modelGejala = new GejalaModel();
+        $modelStok = new StokModel();
 
         $requestBody = file_get_contents('php://input');
         $requestData = json_decode($requestBody, true);
@@ -100,12 +101,22 @@ class PasienController extends BaseController
                 'created_at' => date('Y-m-d'),
                 'updated_at' => date('Y-m-d'),
             ]);
-
+        
             if (!$insertItem) {
                 $idStokSuccess = false;
                 break;
+            } else {
+                // Reduce stock based on ID and quantity
+                $stock = $modelStok->find($idStokItem);
+                if ($stock) {
+                    $updatedQuantity = $stock['quantity'] - $quantity[$index];
+                    $modelStok->update($idStokItem, [
+                        'quantity' => $updatedQuantity,
+                        'updated_at' => date('Y-m-d'),
+                    ]);
+                }
             }
-        }
+        }        
 
         if (!$gejalaSuccess || !$idStokSuccess) {
             return $this->response->setJSON([
@@ -136,71 +147,6 @@ class PasienController extends BaseController
             'pasien' => $modelUser->findDataByRole('pasien'),
             'stok' => $modelStok->findAll(),
         ]);
-    }
-
-    public function pembayaran($id)
-    {
-        helper('number');
-        $modelKunjungan = new KunjunganModel();
-        $modelItem = new ItemModel();
-
-        if ($this->request->getMethod(true) !== 'POST') {
-            return;
-        } else {
-            if ($modelKunjungan->where('kode_kunjungan', $this->request->getPost('kode_kunjungan'))->first()) {
-                $data = [
-                    'items' => $modelItem->getAssociateItems($id),
-                ];
-
-                $filename = date('Y-m-d'). $this->request->getPost('kode_kunjungan');
-
-                // instantiate and use the dompdf class
-                $dompdf = new Dompdf();
-
-                // load HTML content
-                $dompdf->loadHtml(view('invoice/invoice', $data));
-
-                // (optional) setup the paper size and orientation
-                $dompdf->setPaper('A4', 'landscape');
-
-                // render html as PDF
-                $dompdf->render();
-
-                // output the generated pdf
-                $dompdf->stream($filename);
-            } else {
-                $prefix = 'PAY_';
-                $kode_unik = $prefix . uniqid(rand(00000, 99999)); 
-                $data = [
-                    'kode_pembayaran' => $kode_unik,
-                ];
-        
-                if (!$modelKunjungan->update($id,$data)) {
-                    return;
-                }
-        
-                $data = [
-                    'items' => $modelItem->getAssociateItems($id),
-                ];
-
-                $filename = date('Y-m-d'). $this->request->getPost('kode_kunjungan');
-
-                // instantiate and use the dompdf class
-                $dompdf = new Dompdf();
-
-                // load HTML content
-                $dompdf->loadHtml(view('invoice/invoice', $data));
-
-                // (optional) setup the paper size and orientation
-                $dompdf->setPaper('A4', 'landscape');
-
-                // render html as PDF
-                $dompdf->render();
-
-                // output the generated pdf
-                $dompdf->stream($filename);
-            }
-        }
     }
 
     private function generateRandomCode()

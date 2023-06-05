@@ -121,31 +121,53 @@
 																</div>
 															</div>
 															<div class="modal-body scroll-y mx-5 mx-xl-15 my-7">
-																	<div class="d-flex flex-column scroll-y me-n7 pe-7" id="kt_modal_add_kunjungan_scroll" data-kt-scroll="true" data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto" data-kt-scroll-dependencies="#kt_modal_add_kunjungan_header" data-kt-scroll-wrappers="#kt_modal_add_kunjungan_scroll" data-kt-scroll-offset="300px">
-                                                                    	<input type="text" name="id" id="id" hidden/>
-																		<input type="text" name="kode_kunjungan" id="kode_kunjungan" hidden/>
-																		<div class="fv-row mb-3">
-																			<label class="required fw-semibold fs-6 mb-2">Full Name</label>
-																			<input disabled type="text" name="full_name" id="full_name" class="form-control form-control-solid mb-3 mb-lg-0" />
-																		</div>
-																		<div class="fv-row mb-7">
-																			<label class="required fw-semibold fs-6 mb-2">Kode Pasien</label>
-																			<input disabled  type="text" name="kode_pasien" id="kode_pasien" class="form-control form-control-solid mb-3 mb-lg-0" />
-																		</div>
-																		<div class="fv-row mb-7">
-																			<label class="required fw-semibold fs-6 mb-2">Gejala/Keluhan</label>
-																			<input disabled  type="text" name="keluhan" id="keluhan" class="form-control form-control-solid mb-3 mb-lg-0" />
-																		</div>
-																		<div class="fv-row mb-7">
-																			<label class="required fw-semibold fs-6 mb-2">Diagnosa</label>
-																			<input disabled  type="text" name="diagnosa" id="diagnosa" class="form-control form-control-solid mb-3 mb-lg-0" />
-																		</div>
-																		<div class="text-center pt-15">
-																			<button type="button" class="btn btn-primary" onclick="printPDF()">
-																				<span class="indicator-label">Cetak Nota</span>
-																			</button>
-																		</div>
+																<div class="d-flex flex-column scroll-y me-n7 pe-7" id="kt_modal_add_kunjungan_scroll" data-kt-scroll="true" data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto" data-kt-scroll-dependencies="#kt_modal_add_kunjungan_header" data-kt-scroll-wrappers="#kt_modal_add_kunjungan_scroll" data-kt-scroll-offset="300px">
+																	<input type="text" name="id" id="id" hidden/>
+																	<input type="text" name="kode_kunjungan" id="kode_kunjungan" hidden/>
+																	<div class="fv-row mb-3">
+																		<label class="required fw-semibold fs-6 mb-2">Full Name</label>
+																		<input disabled type="text" name="full_name" id="full_name" class="form-control form-control-solid mb-3 mb-lg-0" />
 																	</div>
+																	<div class="fv-row mb-7">
+																		<label class="required fw-semibold fs-6 mb-2">Kode Pasien</label>
+																		<input disabled  type="text" name="kode_pasien" id="kode_pasien" class="form-control form-control-solid mb-3 mb-lg-0" />
+																	</div>
+																	<div class="fv-row mb-7">
+																		<label class="required fw-semibold fs-6 mb-2">Gejala/Keluhan</label>
+																		<input disabled  type="text" name="keluhan" id="keluhan" class="form-control form-control-solid mb-3 mb-lg-0" />
+																	</div>
+																	<div class="fv-row mb-7">
+																		<label class="required fw-semibold fs-6 mb-2">Diagnosa</label>
+																		<input disabled  type="text" name="diagnosa" id="diagnosa" class="form-control form-control-solid mb-3 mb-lg-0" />
+																	</div>
+																	<div class="table-responsive mt-7">
+																		<table class="table table-bordered" id="invoice">
+																			<thead>
+																				<tr>
+																				<th>No.</th>
+																				<th>Nama Obat</th>
+																				<th>Quantity</th>
+																				<th>Harga</th>
+																				<th>Total</th>
+																				</tr>
+																			</thead>
+																			<tbody id="invoice_items">
+																			</tbody>
+																			<tfoot>
+																				<tr>
+																				<td colspan="4" class="text-end fw-bold">Total</td>
+																				<td id="invoice_total">0</td>
+																				</tr>
+																			</tfoot>
+																		</table>
+																	</div>
+																	<div class="text-center pt-15">
+																		<button type="button" class="btn btn-primary" onclick="printPDF()">
+																		<span class="indicator-label">Cetak Nota</span>
+																		</button>
+																	</div>
+																</div>
+
 															</div>
 														</div>
 													</div>
@@ -222,21 +244,73 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.16/jspdf.plugin.autotable.min.js"></script>
 <script>
 	function printPDF() {
-        // Get the content of the modal
-		var modalContent = document.getElementById('kt_modal_add_kunjungan_scroll').innerHTML;
-        
-        // Create a new jsPDF instance
-        var doc = new jsPDF();
-        
-        // Set the font size and add the modal content to the PDF
-        doc.setFontSize(12);
-        doc.html(modalContent, {
-            callback: function (pdf) {
-                // Save the PDF as a file with the name "nota.pdf"
-                pdf.save('nota.pdf');
-            }
-        });
+  // Create a new jsPDF instance
+  var doc = new jsPDF();
+
+  // Set the font size
+  doc.setFontSize(12);
+
+  // Get the values from the HTML elements
+  var fullName = $('#full_name').val();
+  var kodePasien = $('#kode_pasien').val();
+  var keluhan = $('#keluhan').val();
+  var diagnosa = $('#diagnosa').val();
+  var invoiceTotal = $('#invoice_total').text();
+
+  // Set the initial y-position for the content
+  var yPos = 20;
+
+  // Add the invoice details
+  doc.text('Full Name: ' + fullName, 20, yPos);
+  yPos += 10;
+  doc.text('Kode Pasien: ' + kodePasien, 20, yPos);
+  yPos += 10;
+  doc.text('Gejala/Keluhan: ' + keluhan, 20, yPos);
+  yPos += 10;
+  doc.text('Diagnosa: ' + diagnosa, 20, yPos);
+  yPos += 20;
+
+  // Add the invoice items table header
+  var tableHeader = ['No.', 'Nama Obat', 'Quantity', 'Harga', 'Subtotal'];
+  var colWidths = [10, 60, 20, 30, 30];
+  var rowHeight = 8;
+  var headerXPos = 20;
+  var headerYPos = yPos;
+  
+  for (var i = 0; i < tableHeader.length; i++) {
+    doc.text(headerXPos, headerYPos, tableHeader[i]);
+    headerXPos += colWidths[i];
+  }
+  
+  yPos += rowHeight;
+
+  // Add the invoice items table rows
+  var itemNo = 1;
+  $('#invoice tbody tr').each(function () {
+    var rowData = [];
+    $(this).find('td').each(function () {
+      rowData.push($(this).text());
+    });
+    
+    var rowXPos = 20;
+    for (var j = 0; j < rowData.length; j++) {
+      doc.text(rowXPos, yPos, rowData[j]);
+      rowXPos += colWidths[j];
     }
+    
+    yPos += rowHeight;
+    itemNo++;
+  });
+
+  // Add the total
+  yPos += 10;
+  doc.text('Total: ' + invoiceTotal, 20, yPos);
+
+  // Save the PDF as a file with the name "nota.pdf"
+  doc.save('nota.pdf');
+}
+
+
 
 	function showSwalNotification(icon, title, text) {
 		Swal.fire({
@@ -502,36 +576,70 @@
 		});
 	}
 
-	function editKunjungan(id) {
-		save_method = 'update';
-		$('#form').attr('action', `${base_url}dashboard/pembayaran/${id}`); 
-		$.ajax({
-			url : base_url + 'dashboard/pasien/detail/' + id,
-			type: "GET",
-			dataType: "JSON",
-			success: function(respond)
-			{
-				$('[name="id"]').val(respond[0].id_kunjungan);
-				$('[name="full_name"]').val(respond[0].full_name);
-				$('[name="kode_pasien"]').val(respond[0].kode_pasien);
-				$('[name="kode_kunjungan"]').val(respond[0].kode_kunjungan);
-				$('[name="keluhan"]').val(respond[0].keluhan);
-				$('[name="diagnosa"]').val(respond[0].diagnosa);
-				$('#kt_modal_add_kunjungan').modal('show');
-				$('.modal-title').text('Edit Kunjungan'); 
-				console.log(respond)
-			},
-			error: function (jqXHR, textStatus, errorThrown)
-			{
-				Swal.fire({
-					icon: 'error',
-					title: textStatus,
-					text: errorThrown,
-				});
-			}
-		});
-	}
 
+	function editKunjungan(id) {
+  save_method = 'update';
+  $.ajax({
+    url: base_url + 'dashboard/pasien/detail/' + id,
+    type: "GET",
+    dataType: "JSON",
+    success: function (response) {
+      $('[name="id"]').val(response[0].id_kunjungan);
+      $('[name="full_name"]').val(response[0].full_name);
+      $('[name="kode_pasien"]').val(response[0].kode_pasien);
+      $('[name="kode_kunjungan"]').val(response[0].kode_kunjungan);
+      $('[name="keluhan"]').val(response[0].keluhan);
+      $('[name="diagnosa"]').val(response[0].diagnosa);
+
+      var mergedItems = {};
+
+      response.forEach(function (item) {
+        if (!(item.id_stok in mergedItems)) {
+          mergedItems[item.id_stok] = {
+            nama_obat: item.nama_obat,
+            quantity: parseInt(item.quantity),
+            harga: parseFloat(item.harga),
+            subtotal: parseFloat(item.harga) * parseInt(item.quantity)
+          };
+        }
+      });
+
+      var invoiceItems = '';
+      var total = 0;
+      var i = 1;
+
+      for (var key in mergedItems) {
+        var item = mergedItems[key];
+        var subtotal = item.subtotal.toFixed(2);
+
+        invoiceItems += '<tr>';
+        invoiceItems += '<td>' + i + '</td>';
+        invoiceItems += '<td>' + item.nama_obat + '</td>';
+        invoiceItems += '<td>' + item.quantity + '</td>';
+        invoiceItems += '<td>' + item.harga.toFixed(2) + '</td>';
+        invoiceItems += '<td>' + subtotal + '</td>';
+        invoiceItems += '</tr>';
+
+        total += item.subtotal;
+        i++;
+      }
+
+      $('#invoice_items').html(invoiceItems);
+      $('#invoice_total').text(total.toFixed(2));
+
+      $('#kt_modal_add_kunjungan').modal('show');
+      $('.modal-title').text('Edit Kunjungan');
+      console.log(response);
+    },
+    error: function (jqXHR, textStatus, errorThrown) {
+      Swal.fire({
+        icon: 'error',
+        title: textStatus,
+        text: errorThrown,
+      });
+    }
+  });
+}
 	function deleteKunjungan(id) {
 		Swal.fire({
 			title: 'Anda yakin?',

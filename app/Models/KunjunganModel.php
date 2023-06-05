@@ -76,10 +76,41 @@ class KunjunganModel extends Model
                 kunjungan.created_at as tanggal,
                 kunjungan.updated_at as diperbarui,
                 kunjungan.id as id_kunjungan,
+                item.*,
+                item.quantity as jumlah_obat,
+                stok.name as nama_obat,
+                stok.price as harga
             ')
+            ->join('item', 'kunjungan.kode_kunjungan = item.kode_kunjungan')
+            ->join('stok', 'item.id_stok = stok.id')
             ->join('users', 'kunjungan.kode_pasien = users.kode_pasien')
             ->join('gejala', 'kunjungan.kode_kunjungan = gejala.kode_kunjungan')
             ->where('kunjungan.id',$id)
+            ->get()->getResult();
+    }
+
+    function getAllAssociateData($start, $end)
+    {
+        return $this->db->table('kunjungan')
+            ->select('
+                users.name as full_name,
+                users.kode_pasien as kode_pasien,
+                gejala.gejala as keluhan,
+                kunjungan.kode_kunjungan as kode_kunjungan,
+                kunjungan.diagnosa,
+                kunjungan.created_at as tanggal,
+                kunjungan.updated_at as diperbarui,
+                kunjungan.id as id_kunjungan,
+                item.*,
+                item.quantity as jumlah_obat,
+                stok.name as nama_obat,
+                stok.price as harga
+            ')
+            ->join('item', 'kunjungan.kode_kunjungan = item.kode_kunjungan')
+            ->join('stok', 'item.id_stok = stok.id')
+            ->join('users', 'kunjungan.kode_pasien = users.kode_pasien')
+            ->join('gejala', 'kunjungan.kode_kunjungan = gejala.kode_kunjungan')
+            ->where("kunjungan.created_at BETWEEN '$start' AND '$end'")
             ->get()->getResult();
     }
 }

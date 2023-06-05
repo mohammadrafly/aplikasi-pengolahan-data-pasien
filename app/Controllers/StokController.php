@@ -4,6 +4,8 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Models\StokModel;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 class StokController extends BaseController
 {
@@ -31,6 +33,42 @@ class StokController extends BaseController
                 'data' => $model->findAll()
             ]);
         }
+    }
+
+    public function generatePDF()
+    {
+        // Load the invoice data
+        $invoice_number = 'INV-001';
+        $date = '2023-06-05';
+        $customer_name = 'John Doe';
+        $items = [
+            ['description' => 'Product 1', 'quantity' => 2, 'price' => 10],
+            ['description' => 'Product 2', 'quantity' => 3, 'price' => 15],
+        ];
+        $total_amount = 55;
+
+        // Create a new DOMPDF instance
+        $options = new Options();
+        $options->setIsHtml5ParserEnabled(true);
+        $dompdf = new Dompdf($options);
+
+        // Load the invoice view
+        $data = [
+            'invoice_number' => $invoice_number,
+            'date' => $date,
+            'customer_name' => $customer_name,
+            'items' => $items,
+            'total_amount' => $total_amount
+        ];
+        $html = view('invoice/invoice', $data);
+
+        // Convert the HTML to PDF
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        // Output the PDF file for download or save
+        $dompdf->stream("invoice.pdf", ['Attachment' => true]);
     }
 
     public function getStok()

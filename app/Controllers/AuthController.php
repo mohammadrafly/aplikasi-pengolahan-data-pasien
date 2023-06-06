@@ -57,7 +57,7 @@ class AuthController extends BaseController
             }
 
             // Ambil password dari permintaan
-            $password = $this->request->getPost('password');
+            $password = $this->request->getVar('password');
 
             // Periksa apakah password yang diberikan cocok dengan password yang disimpan
             $isValidPassword = password_verify($password, $checkpointData[0]['password']);

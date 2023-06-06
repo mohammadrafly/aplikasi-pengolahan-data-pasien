@@ -70,15 +70,44 @@
 																	<!--begin Scroll-->
 																	<div class="d-flex flex-column scroll-y me-n7 pe-7" id="kt_modal_add_user_scroll" data-kt-scroll="true" data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto" data-kt-scroll-dependencies="#kt_modal_add_user_header" data-kt-scroll-wrappers="#kt_modal_add_user_scroll" data-kt-scroll-offset="300px">
 																		<input hidden name="id" id="id">
+																		<div class="mb-7">
+																			<label class="required fw-semibold fs-6 mb-5">Role</label>
+																			<div class="d-flex fv-row">
+																				<div class="form-check form-check-custom form-check-solid">
+																				<input class="form-check-input me-3" name="role" type="radio" value="admin" />
+																				<label class="form-check-label">
+																					<div class="fw-bold text-gray-800">Administrator</div>
+																				</label>
+																				</div>
+																			</div>
+																			<div class='separator separator-dashed my-5'></div>
+																			<div class="d-flex fv-row">
+																				<div class="form-check form-check-custom form-check-solid">
+																				<input class="form-check-input me-3" name="role" type="radio" value="bidan" />
+																				<label class="form-check-label">
+																					<div class="fw-bold text-gray-800">Bidan</div>
+																				</label>
+																				</div>
+																			</div>
+																			<div class='separator separator-dashed my-5'></div>
+																			<div class="d-flex fv-row">
+																				<div class="form-check form-check-custom form-check-solid">
+																				<input class="form-check-input me-3" name="role" type="radio" value="pasien" />
+																				<label class="form-check-label">
+																					<div class="fw-bold text-gray-800">Pasien</div>
+																				</label>
+																				</div>
+																			</div>
+																		</div>
 																		<div class="fv-row mb-7">
 																			<label class="required fw-semibold fs-6 mb-2">Full Name</label>
 																			<input type="text" name="name" id="name" class="form-control form-control-solid mb-3 mb-lg-0" placeholder="Full name"/>
 																		</div>
-																		<div class="fv-row mb-7">
+																		<div class="fv-row mb-7" id="username-div">
 																			<label class="required fw-semibold fs-6 mb-2">Username</label>
 																			<input type="text" name="username" id="username" class="form-control form-control-solid mb-3 mb-lg-0" placeholder="username"/>
 																		</div>
-																		<div class="fv-row mb-7">
+																		<div class="fv-row mb-7" id="email-div">
 																			<label class="required fw-semibold fs-6 mb-2">Email</label>
 																			<input type="email" name="email" id="email" class="form-control form-control-solid mb-3 mb-lg-0" placeholder="example@domain.com"/>
 																		</div>
@@ -106,35 +135,6 @@
 																					<input class="form-check-input me-3" name="jenis_kelamin" type="radio" value="perempuan" />
 																					<label class="form-check-label">
 																						<div class="fw-bold text-gray-800">Perempuan</div>
-																					</label>
-																				</div>
-																			</div>
-																		</div>
-																		<div class="mb-7">
-																			<label class="required fw-semibold fs-6 mb-5">Role</label>
-																			<div class="d-flex fv-row">
-																				<div class="form-check form-check-custom form-check-solid">
-																					<input class="form-check-input me-3" name="role" type="radio" value="admin" />
-																					<label class="form-check-label">
-																						<div class="fw-bold text-gray-800">Administrator</div>
-																					</label>
-																				</div>
-																			</div>
-																			<div class='separator separator-dashed my-5'></div>
-																			<div class="d-flex fv-row">
-																				<div class="form-check form-check-custom form-check-solid">
-																					<input class="form-check-input me-3" name="role" type="radio" value="bidan" />
-																					<label class="form-check-label">
-																						<div class="fw-bold text-gray-800">Bidan</div>
-																					</label>
-																				</div>
-																			</div>
-																			<div class='separator separator-dashed my-5'></div>
-																			<div class="d-flex fv-row">
-																				<div class="form-check form-check-custom form-check-solid">
-																					<input class="form-check-input me-3" name="role" type="radio" value="pasien"/>
-																					<label class="form-check-label">
-																						<div class="fw-bold text-gray-800">Pasien</div>
 																					</label>
 																				</div>
 																			</div>
@@ -267,6 +267,26 @@
 			row.style.display = 'none';
 		}
 	});
+	});
+
+	const roleRadios = document.getElementsByName("role");
+	const emailField = document.getElementById("email-div");
+	const usernameField = document.getElementById("username-div");
+	const passwordField = document.getElementById("pass");
+
+	// Add event listener to the role radios
+	roleRadios.forEach(function(radio) {
+		radio.addEventListener("change", function() {
+		if (radio.value === "pasien") {
+			emailField.style.display = "none";
+			usernameField.style.display = "none";
+			passwordField.style.display = "none";
+		} else {
+			emailField.style.display = "block";
+			usernameField.style.display = "block";
+			passwordField.style.display = "block";
+		}
+		});
 	});
 </script>
 <script src="<?= base_url('assets/js/custom/Users.js') ?>"></script>
